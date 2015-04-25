@@ -1,0 +1,209 @@
+<!--
+@license
+Copyright (c) 2015 The expand.js authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+This component is used to perform client side routing.
+It must be used in conjunction with xp-route.
+It can be used in conjunction with xp-pages.
+
+@component xp-router
+@description This component is used to perform client side routing
+@mixin xp-targeter http://www.expandjs.com/components/xp-targeter
+
+@dependency director Flatiron/director#~1.2
+@dependency polymer Polymer/polymer#^0.5
+@dependency expandjs ExpandJS/expandjs
+@dependency xp-master-state ExpandJS/xp-master-state
+@dependency xp-observer ExpandJS/xp-observer
+@dependency xp-selected-state ExpandJS/xp-selected-state
+@dependency xp-targeter ExpandJS/xp-targeter
+-->
+
+<script src="../director/build/director.min.js"></script>
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-master-state/xp-master-state.html">
+<link rel="import" href="../xp-observer/xp-observer.html">
+<link rel="import" href="../xp-selected-state/xp-selected-state.html">
+<link rel="import" href="../xp-targeter/xp-targeter.html">
+<link rel="import" href="xp-route.html">
+
+<polymer-element name="xp-router" constructor="XPRouterElement" attributes="data routes selected selection target">
+
+    <template>
+        <style>
+            :host {
+                display: none !important;
+            }
+        </style>
+        <template context="{{}}" is="xp-master-state" id="xpMasterState" slaves="{{routes}}" slaveTag="xp-route"></template>
+        <template context="{{}}" is="xp-selected-state" id="xpSelectedState" indexAttribute="name" items="{{routes}}"
+                  itemSelector="xp-route" selected="{{selected}}" selection="{{selection}}" switchable="{{true}}"
+                  target="{{target}}"></template>
+        <content id="content"></content>
+    </template>
+
+    <script>
+        XPComponent({
+
+            // MIXINS
+            mixins: ['xp-targeter'],
+
+            /*********************************************************************/
+
+            /**
+             * Parses the route's params.
+             *
+             * @method params
+             * @param {Element} route
+             * @returns {Object}
+             */
+            params: function (route) {
+
+                // Asserting
+                XP.assertArgument(XP.includes(this.routes, route), 1, 'Element');
+
+                // Vars
+                var self   = this,
+                    result = {},
+                    keys   = XP.trimLeft(route.path, '/').split('/'),
+                    values = self.adaptee.getRoute();
+
+                // Checking
+                if (!route.path || !values) { return result; }
+
+                // Parsing
+                keys.forEach(function (key, i) { if (key[0] === ':') { result[key.slice(1)] = values[i]; } });
+
+                return result;
+            },
+
+            /*********************************************************************/
+
+            // PUBLISH
+            publish: {
+
+                /**
+                 * The active route's data.
+                 *
+                 * @attribute data
+                 * @type *
+                 */
+                data: {reflect: false, value: null},
+
+                /**
+                 * The slave routes.
+                 *
+                 * @attribute routes
+                 * @type Array
+                 * @readonly
+                 */
+                routes: {reflect: false, value: null},
+
+                /**
+                 * The selected route's name.
+                 *
+                 * @attribute routes
+                 * @type string
+                 */
+                selected: {reflect: false, value: null},
+
+                /**
+                 * The selected route.
+                 *
+                 * @attribute selection
+                 * @type Element
+                 * @readonly
+                 */
+                selection: {reflect: false, value: null},
+
+                /**
+                 * The `id` of the targeted element or the element itself.
+                 *
+                 * @attribute target
+                 * @type Element | string
+                 */
+                target: {reflect: false, value: null}
+            },
+
+            /**
+             * The adapted object.
+             *
+             * @property adaptee
+             * @type Object
+             * @private
+             */
+            adaptee: null,
+
+            /**
+             * Used to know if the router has been initialized.
+             *
+             * @property initialized
+             * @type boolean
+             * @default false
+             * @readonly
+             */
+            initialized: false,
+
+            /*********************************************************************/
+
+            // OBSERVER
+            dataChanged: function (pre, post) {
+                if (arguments.length < 2) { return; }
+                this.dataObserver = XP.isObject(post) ? new XPObserver(post, this.handleData.bind(this)) : null;
+            },
+
+            // OBSERVER
+            dataObserverChanged: function (pre) {
+                if (arguments.length < 2) { return; }
+                if (pre) { pre.disconnect(); }
+            },
+
+            // OBSERVER
+            routesChanged: function () {
+                var self = this;
+                if (self.initialized || !self.routes.length) { return; }
+                self.routes.forEach(self.handleRoute.bind(self));
+                self.adaptee.init('/');
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            created: function () {
+                this.adaptee = new Router();
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            handleData: function () {
+                var self = this, path = (self.selection && self.selection.path) || '';
+                if (path) { XP.forOwn(self.data, function (value, key) { path = path.replace(':' + key, value); }); }
+                if (path) { XP.redirect(path, true); }
+            },
+
+            // HANDLER
+            handleRoute: function (route) {
+
+                // Vars
+                var self   = this,
+                    target = self.findTarget(),
+                    regExp = (route.regex && XP.toRegExp(route.path)) || null;
+
+                // Listening
+                self.adaptee.on(regExp || route.path, function () {
+                    if (route.redirect) { return XP.redirect(route.redirect, true); }
+                    XP.assign(self, {data: XP.assign(self.params(route), route.data), selected: route.name});
+                    XP.delay(function () { XP.assign((target && target.findItem && target.findItem(route.name)) || {}, {data: self.data}); });
+                });
+            }
+        });
+    </script>
+
+</polymer-element>
