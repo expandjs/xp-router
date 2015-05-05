@@ -35,7 +35,7 @@ It can be used in conjunction with xp-pages.
 <link rel="import" href="../xp-targeter/xp-targeter.html">
 <link rel="import" href="xp-route.html">
 
-<polymer-element name="xp-router" constructor="XPRouterElement" attributes="data routes selected selection target">
+<polymer-element name="xp-router" constructor="XPRouterElement" attributes="data indexAttribute routes selected selection target">
 
     <template>
         <style>
@@ -44,9 +44,9 @@ It can be used in conjunction with xp-pages.
             }
         </style>
         <template context="{{}}" is="xp-master-state" id="xpMasterState" slaves="{{routes}}" slaveTag="xp-route"></template>
-        <template context="{{}}" is="xp-selected-state" id="xpSelectedState" indexAttribute="name" items="{{routes}}"
-                  itemSelector="xp-route" selected="{{selected}}" selection="{{selection}}" switchable="{{true}}"
-                  target="{{target}}"></template>
+        <template context="{{}}" is="xp-selected-state" id="xpSelectedState" indexAttribute="{{indexAttribute}}"
+                  items="{{routes}}" itemSelector="xp-route" selected="{{selected}}" selection="{{selection}}"
+                  switchable="{{true}}" target="{{target}}"></template>
         <content id="content"></content>
     </template>
 
@@ -97,6 +97,15 @@ It can be used in conjunction with xp-pages.
                  * @type *
                  */
                 data: {reflect: false, value: null},
+
+                /**
+                 * The attribute used as index.
+                 *
+                 * @attribute indexAttribute
+                 * @type string
+                 * @default ""
+                 */
+                indexAttribute: {reflect: true, value: ''},
 
                 /**
                  * The slave routes.
