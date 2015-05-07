@@ -248,7 +248,7 @@ It can be used in conjunction with xp-pages.
                 self.adaptee.on(regExp || route.path, function () {
                     if (route.redirect) { return XP.redirect(route.redirect, true); }
                     XP.assign(self, {data: XP.assign(self.params(route), route.data), selected: route.name});
-                    XP.requestAnimationFrame(function () { XP.assign((target && target.findItem && target.findItem(route.name)) || {}, {data: self.data}); });
+                    XP.delay(function () { XP.assign((target && target.findItem && target.findItem(route.name)) || {}, {data: self.data}); });
                 });
             }
         });
