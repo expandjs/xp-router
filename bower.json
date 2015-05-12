@@ -1,7 +1,7 @@
 {
   "name": "xp-router",
   "license": "BSD-3-Clause",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "description": "A custom element used to perform client side routing",
   "homepage": "http://www.expandjs.com/elements/xp-router",
   "authors": [
