@@ -221,6 +221,14 @@ It can be used in conjunction with xp-pages.
                 self.adaptee.init('/');
             },
 
+            // OBSERVER
+            selectionChanged: function (pre, post) {
+                if (arguments.length < 2) { return; }
+                var self = this, target = self.findTarget();
+                XP.assign(self, {data: post ? XP.assign(self.params(post), post.data) : null});
+                XP.assign((target && target.findPage && target.findPage(self.selected)) || {}, {data: self.data});
+            },
+
             /*********************************************************************/
 
             // LISTENER
@@ -242,14 +250,12 @@ It can be used in conjunction with xp-pages.
 
                 // Vars
                 var self   = this,
-                    target = self.findTarget(),
+                    state  = self.$.xpSelectedState,
                     regExp = (route.regex && XP.toRegExp(route.path)) || null;
 
                 // Listening
                 self.adaptee.on(regExp || route.path, function () {
-                    if (route.redirect) { return XP.redirect(route.redirect, true); }
-                    XP.assign(self, {data: XP.assign(self.params(route), route.data), selected: route.name});
-                    XP.delay(function () { XP.assign((target && target.findItem && target.findItem(route.name)) || {}, {data: self.data}); });
+                    return route.redirect ? XP.redirect(route.redirect, true) : state.select(route);
                 });
             }
         });
