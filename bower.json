@@ -23,12 +23,12 @@
     "**/.*"
   ],
   "dependencies": {
-    "expandjs": "ExpandJS/expandjs",
-    "xp-master-state": "ExpandJS/xp-master-state",
-    "xp-observer": "ExpandJS/xp-observer",
-    "xp-selected-state": "ExpandJS/xp-selected-state",
-    "xp-slave-state": "ExpandJS/xp-slave-state",
-    "xp-targeter": "ExpandJS/xp-targeter",
+    "expandjs": "ExpandJS/expandjs#alpha",
+    "xp-master-state": "ExpandJS/xp-master-state#alpha",
+    "xp-observer": "ExpandJS/xp-observer#alpha",
+    "xp-selected-state": "ExpandJS/xp-selected-state#alpha",
+    "xp-slave-state": "ExpandJS/xp-slave-state#alpha",
+    "xp-targeter": "ExpandJS/xp-targeter#alpha",
     "director": "Flatiron/director#~1.2",
     "polymer": "Polymer/polymer#^0.5"
   }
