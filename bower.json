@@ -1,0 +1,33 @@
+{
+  "name": "xp-router",
+  "license": "BSD-3-Clause",
+  "version": "0.9.0",
+  "description": "A custom element used to perform client side routing",
+  "homepage": "http://expandjs.com/elements/xp-router",
+  "authors": [
+    "Giuliano Rullo <g.rullo@expandjs.com>",
+    "Maurizio Stefàno <m.stefano@expandjs.com>",
+    "Robert Manolea <r.manolea@expandjs.com>"
+  ],
+  "keywords": [
+    "web app",
+    "html5",
+    "expandjs",
+    "web-components"
+  ],
+  "main": [
+    "xp-route.html",
+    "xp-router.html"
+  ],
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "expandjs": "ExpandJS/expandjs",
+    "xp-master-state": "ExpandJS/xp-master-state",
+    "xp-selected-behavior": "ExpandJS/xp-selected-behavior",
+    "xp-slave-state": "ExpandJS/xp-slave-state",
+    "director": "Flatiron/director#~1.2",
+    "polymer": "Polymer/polymer"
+  }
+}

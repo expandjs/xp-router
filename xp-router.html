@@ -1,0 +1,209 @@
+<!--
+@license
+Copyright (c) 2015 The ExpandJS authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+This element is used to perform client side routing.
+It must be used in conjunction with xp-route.
+It can be used in conjunction with xp-pages.
+
+@element xp-router
+@description A custom element used to perform client side routing
+@keywords web app, html5, expandjs, web-components
+@group navigation
+@homepage http://expandjs.com/elements/xp-router
+
+@behavior xp-selected-behavior http://expandjs.com/elements/xp-selected-behavior
+
+@dependency director Flatiron/director#~1.2
+@dependency polymer Polymer/polymer
+@dependency expandjs ExpandJS/expandjs
+@dependency xp-master-state ExpandJS/xp-master-state
+@dependency xp-selected-behavior ExpandJS/xp-selected-behavior
+-->
+
+<script src="../director/build/director.min.js"></script>
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-master-state/xp-master-state.html">
+<link rel="import" href="../xp-selected-behavior/xp-selected-behavior.html">
+<link rel="import" href="xp-route.html">
+
+<dom-module id="xp-router">
+
+    <style>
+        :host {
+            display: none !important;
+        }
+    </style>
+
+    <template>
+        <xp-master-state id="xpMasterState" slaves="{{items}}" slave-tag="xp-route"></xp-master-state>
+        <content id="content"></content>
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-router',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPSelectedBehavior
+            ],
+
+            /*********************************************************************/
+
+            /**
+             * Parses the route's params.
+             *
+             * @method _params
+             * @param {Element} route
+             * @returns {Object}
+             * @private
+             */
+            _params: function (route) {
+
+                // Asserting
+                XP.assertArgument(XP.includes(this.items, route), 1, 'Element');
+
+                // Vars
+                var self   = this,
+                    result = {},
+                    keys   = XP.trimLeft(route.path, '/').split('/'),
+                    values = self.adaptee.getRoute();
+
+                // Checking
+                if (!route.path || !values) { return result; }
+
+                // Parsing
+                keys.forEach(function (key, i) { if (key[0] === ':') { result[key.slice(1)] = values[i]; } });
+
+                return result;
+            },
+
+            /*********************************************************************/
+
+            // ATTRIBUTES
+            hostAttributes: {
+                'item-selector': 'xp-route'
+            },
+
+            // LISTENERS
+            listeners: {
+                'items-changed': '_handleItems',
+                'selection-changed': '_handleSelection'
+            },
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The adapted object.
+                 *
+                 * @attribute adaptee
+                 * @type Object
+                 * @notifies
+                 * @readonly
+                 */
+                adaptee: {
+                    notify: true,
+                    readOnly: true,
+                    type: Object,
+                    value: function () { return new Router(); }
+                },
+
+                /**
+                 * The active route's data.
+                 *
+                 * @attribute data
+                 * @type Object
+                 * @notifies
+                 */
+                data: {
+                    notify: true,
+                    observer: '_dataChanged',
+                    type: Object,
+                    value: null
+                },
+
+                /**
+                 * If set to true, the router has been initialized.
+                 *
+                 * @attribute initialized
+                 * @type boolean
+                 * @default false
+                 * @notifies
+                 * @readonly
+                 */
+                initialized: {
+                    notify: true,
+                    readOnly: true,
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _dataChanged: function () {
+
+                // Vars
+                var self = this,
+                    path = (self.selection && self.selection.path) || '';
+
+                // Checking
+                if (arguments.length > 1 || !path) { return; }
+
+                // Preparing
+                XP.forOwn(self.data, function (value, key) { path = path.replace(':' + key, value); });
+
+                // Redirecting
+                XP.redirect(path, true);
+            },
+
+            /*********************************************************************/
+
+            // HANBDLER
+            _handleItems: function () {
+
+                // Vars
+                var self = this;
+
+                // Checking
+                if (self.initialized || !self.items.length) { return; }
+
+                // Routing
+                self.items.forEach(function (item) {
+                    var regExp = (item.regex && XP.toRegExp(item.path)) || null;
+                    self.adaptee.on(regExp || item.path, function () { return item.redirect ? XP.redirect(item.redirect, true) : self.select(item); });
+                });
+
+                // Initializing
+                self.adaptee.init('/');
+            },
+
+            // HANDLER
+            _handleSelection: function () {
+
+                // Vars
+                var self   = this,
+                    target = self.findTarget(),
+                    item   = target && target.findItem && target.findItem(self.selected);
+
+                // Setting
+                self.data = self.selection ? XP.assign(self.params(post), post.data) : null;
+
+                // Propagating
+                if (item) { item.data = self.data; }
+            }
+        });
+    </script>
+
+</dom-module>
