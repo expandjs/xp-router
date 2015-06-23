@@ -17,13 +17,13 @@ It can be used in conjunction with xp-pages.
 @group navigation
 @homepage http://expandjs.com/elements/xp-router
 
-@behavior xp-selected-behavior http://expandjs.com/elements/xp-selected-behavior
+@behavior xp-selected-behavior http://expandjs.com/elements/xp-selected-behavior#0.9.1
 
 @dependency director Flatiron/director#~1.2
-@dependency polymer Polymer/polymer
-@dependency expandjs ExpandJS/expandjs
-@dependency xp-master-state ExpandJS/xp-master-state
-@dependency xp-selected-behavior ExpandJS/xp-selected-behavior
+@dependency polymer Polymer/polymer#^1.0.4
+@dependency expandjs ExpandJS/expandjs#0.9.1
+@dependency xp-master-state ExpandJS/xp-master-state#0.9.1
+@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.1
 -->
 
 <script src="../director/build/director.min.js"></script>
@@ -42,7 +42,7 @@ It can be used in conjunction with xp-pages.
     </style>
 
     <template>
-        <xp-master-state id="xpMasterState" slaves="{{items}}" slave-tag="xp-route"></xp-master-state>
+        <template is="xp-master-state" id="xpMasterState" slaves="{{items}}" slave-tag="xp-route"></template>
         <content id="content"></content>
     </template>
 
@@ -88,11 +88,6 @@ It can be used in conjunction with xp-pages.
             },
 
             /*********************************************************************/
-
-            // ATTRIBUTES
-            hostAttributes: {
-                'item-selector': 'xp-route'
-            },
 
             // LISTENERS
             listeners: {
@@ -146,6 +141,20 @@ It can be used in conjunction with xp-pages.
                     readOnly: true,
                     type: Boolean,
                     value: false
+                },
+
+                /**
+                 * The selector used to recognize selectable items.
+                 * TODO Temporary webcomponents polyfill's fix for `hostAttributes`.
+                 *
+                 * @attribute item-selector
+                 * @type string
+                 * @default "xp-route"
+                 */
+                itemSelector: {
+                    reflectToAttribute: true,
+                    type: String,
+                    value: 'xp-route'
                 }
             },
 
