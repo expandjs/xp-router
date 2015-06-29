@@ -18,125 +18,97 @@ It must be used in conjunction with xp-router.
 
 @dependency polymer Polymer/polymer#^1.0.0
 @dependency expandjs ExpandJS/expandjs#0.9.2
-@dependency xp-slave-state ExpandJS/xp-slave-state#0.9.2
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
-<link rel="import" href="../xp-slave-state/xp-slave-state.html">
 
-<dom-module id="xp-route">
+<script>
+    Polymer({
 
-    <style>
-        :host {
-            display: none !important;
-        }
-    </style>
+        // ELEMENT
+        is: 'xp-route',
 
-    <template>
-        <template is="xp-slave-state" master="{{selector}}" master-tag="xp-router"></template>
-    </template>
+        /*********************************************************************/
 
-    <script>
-        Polymer({
+        // PROPERTIES
+        properties: {
 
-            // ELEMENT
-            is: 'xp-route',
+            /**
+             * If set to true, the route is currently active.
+             *
+             * @attribute active
+             * @type boolean
+             * @default false
+             * @notifies
+             */
+            active: {
+                notify: true,
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
+            },
 
-            /*********************************************************************/
+            /**
+             * The route's data.
+             *
+             * @attribute data
+             * @type *
+             * @notifies
+             */
+            data: {
+                notify: true,
+                value: null
+            },
 
-            // PROPERTIES
-            properties: {
+            /**
+             * The route's name.
+             *
+             * @attribute name
+             * @type string
+             */
+            name: {
+                reflectToAttribute: true,
+                type: String,
+                value: null
+            },
 
-                /**
-                 * If set to true, the route is currently active.
-                 *
-                 * @attribute active
-                 * @type boolean
-                 * @default false
-                 * @notifies
-                 */
-                active: {
-                    notify: true,
-                    reflectToAttribute: true,
-                    type: Boolean,
-                    value: false
-                },
+            /**
+             * The path that must be matched against the URL hash to activate the route.
+             *
+             * @attribute path
+             * @type string
+             */
+            path: {
+                reflectToAttribute: true,
+                type: String,
+                value: null
+            },
 
-                /**
-                 * The route's data.
-                 *
-                 * @attribute data
-                 * @type *
-                 * @notifies
-                 */
-                data: {
-                    notify: true,
-                    value: null
-                },
+            /**
+             * The path to be redirected at when the route becomes active.
+             *
+             * @attribute redirect
+             * @type string
+             */
+            redirect: {
+                reflectToAttribute: true,
+                type: String,
+                value: null
+            },
 
-                /**
-                 * The route's name.
-                 *
-                 * @attribute name
-                 * @type string
-                 */
-                name: {
-                    reflectToAttribute: true,
-                    type: String,
-                    value: null
-                },
-
-                /**
-                 * The path that must be matched against the URL hash to activate the route.
-                 *
-                 * @attribute path
-                 * @type string
-                 */
-                path: {
-                    reflectToAttribute: true,
-                    type: String,
-                    value: null
-                },
-
-                /**
-                 * The path to be redirected at when the route becomes active.
-                 *
-                 * @attribute redirect
-                 * @type string
-                 */
-                redirect: {
-                    reflectToAttribute: true,
-                    type: String,
-                    value: null
-                },
-
-                /**
-                 * If set to true, the route's path is parsed as regex.
-                 *
-                 * @attribute regex
-                 * @type boolean
-                 * @default false
-                 */
-                regex: {
-                    reflectToAttribute: true,
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * The parent selector.
-                 *
-                 * @attribute selector
-                 * @type Element
-                 * @notifies
-                 */
-                selector: {
-                    notify: true,
-                    value: null
-                }
+            /**
+             * If set to true, the route's path is parsed as regex.
+             *
+             * @attribute regex
+             * @type boolean
+             * @default false
+             */
+            regex: {
+                reflectToAttribute: true,
+                type: Boolean,
+                value: false
             }
-        });
-    </script>
-
-</dom-module>
+        }
+    });
+</script>
