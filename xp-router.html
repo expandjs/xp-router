@@ -186,14 +186,16 @@ It can be used in conjunction with xp-pages.
                 // Vars
                 var self   = this,
                     route  = self.selection,
-                    target = self.findTarget(),
-                    item   = target && target.findItem && target.findItem(self.selected);
+                    target = self.findTarget();
 
                 // Setting
                 self.data = route ? XP.assign(self._params(route), route.data) : null;
 
+                // Checking
+                if (!target || !target.findItem) { return; }
+
                 // Propagating
-                if (item) { item.data = self.data; }
+                XP.delay(function () { (target.findItem(self.selected) || {}).data = self.data; });
             }
         });
     </script>
