@@ -172,8 +172,9 @@ It can be used in conjunction with xp-pages.
 
                 // Routing
                 self.items.forEach(function (item) {
-                    var regExp = (item.regex && XP.toRegExp(item.path)) || null;
-                    self.adaptee.on(regExp || item.path, function () { return item.redirect ? XP.redirect(item.redirect, true) : self.select(item); });
+                    self.adaptee.on((item.regex && XP.toRegExp(item.path)) || item.path, function () {
+                        return item.redirect ? XP.redirect(item.redirect, true) : self.select(item);
+                    });
                 });
 
                 // Initializing
