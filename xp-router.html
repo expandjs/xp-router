@@ -57,31 +57,16 @@ It can be used in conjunction with xp-pages.
             /*********************************************************************/
 
             /**
-             * Parses the route's params.
+             * Updates the view's data.
              *
-             * @method _params
-             * @param {Element} route
-             * @returns {Object}
+             * @method _update
+             * @returns {Element}
              * @private
              */
-            _params: function (route) {
-
-                // Asserting
-                XP.assertArgument(XP.includes(this.items, route), 1, 'Element');
-
-                // Vars
-                var self   = this,
-                    result = {},
-                    keys   = XP.trimLeft(route.path, '/').split('/'),
-                    values = self.adaptee.getRoute();
-
-                // Checking
-                if (!route.path || !values) { return result; }
-
-                // Parsing
-                keys.forEach(function (key, i) { if (key[0] === ':') { result[key.slice(1)] = values[i]; } });
-
-                return result;
+            _update: function () {
+                var self = this;
+                if (self.view) { self.view.data = self.data; }
+                return self;
             },
 
             /*********************************************************************/
@@ -116,12 +101,14 @@ It can be used in conjunction with xp-pages.
                  * @attribute data
                  * @type Object
                  * @notifies
+                 * @readonly
                  */
                 data: {
                     notify: true,
+                    readOnly: true,
                     observer: '_dataChanged',
                     type: Object,
-                    value: null
+                    value: function () { return {}; }
                 },
 
                 /**
@@ -137,6 +124,19 @@ It can be used in conjunction with xp-pages.
                     reflectToAttribute: true,
                     type: String,
                     value: 'xp-route'
+                },
+
+                /**
+                 * The selected view.
+                 *
+                 * @attribute view
+                 * @type Element
+                 * @notifies
+                 */
+                view: {
+                    notify: true,
+                    observer: '_update',
+                    value: null
                 }
             },
 
@@ -146,17 +146,18 @@ It can be used in conjunction with xp-pages.
             _dataChanged: function () {
 
                 // Vars
-                var self = this,
-                    path = (self.selection && self.selection.path) || '';
-
-                // Checking
-                if (arguments.length > 1 || !path) { return; }
+                var self   = this,
+                    before = (self.selection && self.selection.path) || '',
+                    after  = before;
 
                 // Preparing
-                XP.forOwn(self.data, function (value, key) { path = path.replace(':' + key, value); });
+                XP.forOwn(self.data, function (value, key) { after = after.replace(':' + key, value); });
 
                 // Redirecting
-                XP.redirect(path, true);
+                if (after !== before) { return XP.redirect(after, true); }
+
+                // Updating
+                self._update();
             },
 
             /*********************************************************************/
@@ -186,17 +187,18 @@ It can be used in conjunction with xp-pages.
 
                 // Vars
                 var self   = this,
-                    route  = self.selection,
-                    target = self.findTarget();
+                    data   = {},
+                    keys   = (self.selection && XP.trimLeft(self.selection.path, '/').split('/')) || [],
+                    values = (self.adaptee && self.adaptee.getRoute()) || null;
+
+                // Parsing
+                if (values) { keys.forEach(function (key, i) { if (key[0] === ':') { data[key.slice(1)] = values[i]; } }); }
 
                 // Setting
-                self.data = route ? XP.assign(self._params(route), route.data) : null;
+                self._setData(XP.assign(data, self.selection && self.selection.data));
 
-                // Checking
-                if (!target || !target.findItem) { return; }
-
-                // Propagating
-                XP.delay(function () { (target.findItem(self.selected) || {}).data = self.data; });
+                // Updating
+                self._update();
             }
         });
     </script>
