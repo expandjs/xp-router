@@ -145,7 +145,7 @@ It can be used in conjunction with xp-pages.
 
             /*********************************************************************/
 
-            // HANBDLER
+            // HANDLER
             _handleItems: function () {
 
                 // Vars
@@ -177,11 +177,8 @@ It can be used in conjunction with xp-pages.
                 // Parsing
                 if (values) { keys.forEach(function (key, i) { if (key[0] === ':') { data[key.slice(1)] = values[i]; } }); }
 
-                // Merging
-                XP.assign(data, self.selection && self.selection.data);
-
                 // Setting
-                XP.forOwn(data, function (value, key) { self.set('data.' + key, value); });
+                self._setData(XP.assign(data, self.selection && self.selection.data));
             }
         });
     </script>
