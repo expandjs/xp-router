@@ -77,6 +77,11 @@ It can be used in conjunction with xp-pages.
                 'selection-changed': '_handleSelection'
             },
 
+            // OBSERVERS
+            observers: [
+                '_update(data.*, view)'
+            ],
+
             // PROPERTIES
             properties: {
 
@@ -106,7 +111,6 @@ It can be used in conjunction with xp-pages.
                 data: {
                     notify: true,
                     readOnly: true,
-                    observer: '_dataChanged',
                     type: Object,
                     value: function () { return {}; }
                 },
@@ -135,29 +139,8 @@ It can be used in conjunction with xp-pages.
                  */
                 view: {
                     notify: true,
-                    observer: '_update',
                     value: null
                 }
-            },
-
-            /*********************************************************************/
-
-            // OBSERVER
-            _dataChanged: function () {
-
-                // Vars
-                var self   = this,
-                    before = (self.selection && self.selection.path) || '',
-                    after  = before;
-
-                // Preparing
-                XP.forOwn(self.data, function (value, key) { after = after.replace(':' + key, value); });
-
-                // Redirecting
-                if (after !== before) { return XP.redirect(after, true); }
-
-                // Updating
-                self._update();
             },
 
             /*********************************************************************/
@@ -194,11 +177,11 @@ It can be used in conjunction with xp-pages.
                 // Parsing
                 if (values) { keys.forEach(function (key, i) { if (key[0] === ':') { data[key.slice(1)] = values[i]; } }); }
 
-                // Setting
-                self._setData(XP.assign(data, self.selection && self.selection.data));
+                // Merging
+                XP.assign(data, self.selection && self.selection.data);
 
-                // Updating
-                self._update();
+                // Setting
+                XP.forOwn(data, function (value, key) { self.set('data.' + key, value); });
             }
         });
     </script>
