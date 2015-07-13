@@ -21,8 +21,8 @@ It can be used in conjunction with xp-pages.
 
 @dependency director Flatiron/director#^1.0.0
 @dependency polymer Polymer/polymer#^1.0.0
-@dependency expandjs ExpandJS/expandjs#0.9.3
-@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.3
+@dependency expandjs ExpandJS/expandjs#0.9.4
+@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.4
 -->
 
 <script src="../director/build/director.min.js"></script>
@@ -86,21 +86,6 @@ It can be used in conjunction with xp-pages.
             properties: {
 
                 /**
-                 * The adapted object.
-                 *
-                 * @attribute adaptee
-                 * @type Object
-                 * @notifies
-                 * @readonly
-                 */
-                adaptee: {
-                    notify: true,
-                    readOnly: true,
-                    type: Object,
-                    value: function () { return new Router(); }
-                },
-
-                /**
                  * The active route's data.
                  *
                  * @attribute data
@@ -131,6 +116,21 @@ It can be used in conjunction with xp-pages.
                 },
 
                 /**
+                 * The physical router.
+                 *
+                 * @attribute router
+                 * @type Object
+                 * @notifies
+                 * @readonly
+                 */
+                router: {
+                    notify: true,
+                    readOnly: true,
+                    type: Object,
+                    value: function () { return new Router(); }
+                },
+
+                /**
                  * The selected view.
                  *
                  * @attribute view
@@ -152,17 +152,17 @@ It can be used in conjunction with xp-pages.
                 var self = this;
 
                 // Checking
-                if (self.adaptee._invoked || !self.items.length) { return; }
+                if (self.router._invoked || !self.items.length) { return; }
 
                 // Routing
                 self.items.forEach(function (item) {
-                    self.adaptee.on((item.regex && XP.toRegExp(item.path)) || item.path, function () {
+                    self.router.on((item.regex && XP.toRegExp(item.path)) || item.path, function () {
                         return item.redirect ? XP.redirect(item.redirect, true) : self.select(item);
                     });
                 });
 
                 // Initializing
-                self.adaptee.init('/');
+                self.router.init('/');
             },
 
             // HANDLER
@@ -172,7 +172,7 @@ It can be used in conjunction with xp-pages.
                 var self   = this,
                     data   = {},
                     keys   = (self.selection && XP.trimLeft(self.selection.path, '/').split('/')) || [],
-                    values = (self.adaptee && self.adaptee.getRoute()) || null;
+                    values = (self.router && self.router.getRoute()) || null;
 
                 // Parsing
                 if (values) { keys.forEach(function (key, i) { if (key[0] === ':') { data[key.slice(1)] = values[i]; } }); }
