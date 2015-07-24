@@ -19,12 +19,12 @@ It can be used in conjunction with xp-pages.
 @group navigation
 @homepage http://expandjs.com/elements/xp-router
 
-@behavior xp-selected-behavior http://expandjs.com/elements/xp-selected-behavior
+@behavior xp-selected-behavior /bower_components/xp-selected-behavior/xp-selected-behavior.html
 
 @dependency director Flatiron/director#^1.0.0
 @dependency polymer Polymer/polymer#^1.0.0
-@dependency expandjs ExpandJS/expandjs#0.9.4
-@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.4
+@dependency expandjs ExpandJS/expandjs#0.9.5
+@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.5
 -->
 
 <script src="../director/build/director.min.js"></script>
@@ -104,8 +104,6 @@ It can be used in conjunction with xp-pages.
 
                 /**
                  * The selector used to recognize selectable items.
-                 *
-                 * TODO Temporary webcomponents polyfill's fix for `hostAttributes`.
                  *
                  * @attribute item-selector
                  * @type string
