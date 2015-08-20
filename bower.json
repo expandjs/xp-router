@@ -2,6 +2,7 @@
   "name": "xp-router",
   "license": "BSD-3-Clause",
   "version": "0.9.6",
+  "main": "xp-router.html",
   "description": "A custom element used to perform client side routing",
   "homepage": "http://expandjs.com/elements/xp-router",
   "authors": [
@@ -14,10 +15,6 @@
     "html5",
     "expandjs",
     "web-components"
-  ],
-  "main": [
-    "xp-route.html",
-    "xp-router.html"
   ],
   "ignore": [
     "**/.*"
