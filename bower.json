@@ -23,6 +23,6 @@
     "expandjs": "ExpandJS/expandjs#0.9.8",
     "xp-selected-behavior": "ExpandJS/xp-selected-behavior#0.9.8",
     "director": "Flatiron/director#^1.0.0",
-    "polymer": "Polymer/polymer#^1.0.0"
+    "polymer": "Polymer/polymer#^1.1.0"
   }
 }
