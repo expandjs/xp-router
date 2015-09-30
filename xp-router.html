@@ -20,19 +20,22 @@ It can be used in conjunction with xp-pages.
 @homepage http://expandjs.com/elements/xp-router
 @repository https://github.com/ExpandJS/xp-router
 
+@behavior xp-adapter-behavior /bower_components/xp-adapter-behavior/xp-adapter-behavior.html
 @behavior xp-selected-behavior /bower_components/xp-selected-behavior/xp-selected-behavior.html
 
-@dependency director Flatiron/director#^1.0.0
 @dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.9
-@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.9
+@dependency expandjs ExpandJS/expandjs#0.9.10
+@dependency xp-adapter-behavior ExpandJS/xp-adapter-behavior#0.9.10
+@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.10
 -->
 
-<script src="../director/build/director.min.js"></script>
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-adapter-behavior/xp-adapter-behavior.html">
 <link rel="import" href="../xp-selected-behavior/xp-selected-behavior.html">
 <link rel="import" href="xp-route.html">
+
+<script src="dist/xp-router.min.js"></script>
 
 <dom-module id="xp-router">
 
@@ -56,6 +59,7 @@ It can be used in conjunction with xp-pages.
 
             // BEHAVIORS
             behaviors: [
+                Polymer.XPAdapterBehavior,
                 Polymer.XPSelectedBehavior
             ],
 
@@ -78,8 +82,7 @@ It can be used in conjunction with xp-pages.
 
             // LISTENERS
             listeners: {
-                'items-changed': '_handleItems',
-                'selection-changed': '_handleSelection'
+                'items-changed': '_handleItems'
             },
 
             // OBSERVERS
@@ -106,6 +109,23 @@ It can be used in conjunction with xp-pages.
                 },
 
                 /**
+                 * If set to true, the router is initialized.
+                 *
+                 * @attribute initialized
+                 * @type boolean
+                 * @default false
+                 * @notifies
+                 * @readonly
+                 */
+                initialized: {
+                    notify: true,
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
                  * The selector used to recognize selectable items.
                  *
                  * @attribute item-selector
@@ -119,21 +139,6 @@ It can be used in conjunction with xp-pages.
                 },
 
                 /**
-                 * The physical router.
-                 *
-                 * @attribute router
-                 * @type Object
-                 * @notifies
-                 * @readonly
-                 */
-                router: {
-                    notify: true,
-                    readOnly: true,
-                    type: Object,
-                    value: function () { return new Router(); }
-                },
-
-                /**
                  * The selected view.
                  *
                  * @attribute view
@@ -142,8 +147,16 @@ It can be used in conjunction with xp-pages.
                  */
                 view: {
                     notify: true,
+                    type: Object,
                     value: null
                 }
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            ready: function () {
+                this._adapt(new XPRouter());
             },
 
             /*********************************************************************/
@@ -155,33 +168,26 @@ It can be used in conjunction with xp-pages.
                 var self = this;
 
                 // Checking
-                if (self.router._invoked || !self.items.length) { return; }
+                if (self.initialized || !self.items.length) { return; }
 
                 // Routing
-                self.items.forEach(function (item) {
-                    self.router.on((item.regex && XP.toRegExp(item.path)) || item.path, function () {
-                        return item.redirect ? XP.redirect(item.redirect, true) : self.select(item);
-                    });
-                });
+                self.items.forEach(function (route) { self.adaptee.on(route.path, self._handleRoute.bind(self, route)); });
 
                 // Initializing
-                self.router.init('/');
+                self._setInitialized(self.adaptee.init());
             },
 
             // HANDLER
-            _handleSelection: function () {
+            _handleRoute: function (route, data) {
 
                 // Vars
-                var self   = this,
-                    data   = {},
-                    keys   = (self.selection && XP.trimLeft(self.selection.path, '/').split('/')) || [],
-                    values = (self.router && self.router.getRoute()) || null;
+                var self = this;
 
-                // Parsing
-                if (values) { keys.forEach(function (key, i) { if (key[0] === ':') { data[key.slice(1)] = values[i]; } }); }
+                // Selecting
+                if (!route.redirect) { self.select(route, true); } else { XP.redirect(route.redirect, true); }
 
                 // Setting
-                self._setData(XP.assign(data, self.selection && self.selection.data));
+                if (!route.redirect) { self._setData(XP.assign(data, route.data)); }
             }
         });
     </script>
