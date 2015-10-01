@@ -24,8 +24,9 @@
     "minifyify": "*"
   },
   "scripts": {
-    "build": "browserify index -i director -i expandjs | derequire > dist/xp-router.js && npm run build:min",
-    "build:min": "browserify -d index -i director -i expandjs -p [minifyify --map xp-router.min.map --output dist/xp-router.min.map] | derequire > dist/xp-router.min.js"
+    "build": "npm run build:browserify && npm run build:minify && node noconflict",
+    "build:browserify": "browserify index -i director -i expandjs --standalone XPRouter | derequire > dist/xp-router.js",
+    "build:minify": "browserify -d index -i director -i expandjs --standalone XPRouter -p [minifyify --map xp-router.min.map --output dist/xp-router.min.map] | derequire > dist/xp-router.min.js"
   },
   "keywords": [
       "expandjs",
