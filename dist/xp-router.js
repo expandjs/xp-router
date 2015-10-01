@@ -22,7 +22,7 @@ module.exports = _dereq_('./lib');
     var parser   = _dereq_('path-to-regexp'),
         XP       = global.XP || _dereq_('expandjs'),
         director = XP.isBrowser() ? _dereq_('director/build/director') : _dereq_('director'),
-        Router   = XP.isBrowser() ? global.Router : director.http.Router;
+        Router   = XP.isBrowser() ? director.Router : director.http.Router;
 
     /*********************************************************************/
 
@@ -59,24 +59,6 @@ module.exports = _dereq_('./lib');
         /**
          * TODO DOC
          *
-         * @method init
-         * @returns {boolean}
-         */
-        init: function () {
-
-            // Vars
-            var self = this;
-
-            // Initializing
-            if (!self.initialized && XP.isBrowser()) { self._adaptee.init(); }
-
-            // Setting
-            return self.initialized = true;
-        },
-
-        /**
-         * TODO DOC
-         *
          * @method on
          * @param {string} path
          * @param {string} [method = "GET"]
@@ -98,7 +80,7 @@ module.exports = _dereq_('./lib');
                 keys = [];
 
             // Checking
-            if (self.initialized) { return self; }
+            if (self.running) { return self; }
 
             // Overriding
             keys   = XP.pluck(parser(path, keys) && keys, 'name');
@@ -114,18 +96,25 @@ module.exports = _dereq_('./lib');
             return self;
         },
 
-        /*********************************************************************/
-
         /**
          * TODO DOC
          *
-         * @property initialized
-         * @type boolean
-         * @readonly
+         * @method run
+         * @returns {boolean}
          */
-        initialized: {
-            set: function (val) { return this.initialized || !!val; }
+        run: function () {
+
+            // Vars
+            var self = this;
+
+            // Initializing
+            if (!self.running && XP.isBrowser()) { self._adaptee.init(); }
+
+            // Setting
+            return self.running = true;
         },
+
+        /*********************************************************************/
 
         /**
          * TODO DOC
@@ -135,7 +124,18 @@ module.exports = _dereq_('./lib');
          * @readonly
          */
         route: {
-            get: function () { return (this.initialized && this._adaptee.getRoute()) || null; }
+            get: function () { return (this.running && this._adaptee.getRoute()) || null; }
+        },
+
+        /**
+         * TODO DOC
+         *
+         * @property running
+         * @type boolean
+         * @readonly
+         */
+        running: {
+            set: function (val) { return this.running || !!val; }
         },
 
         /*********************************************************************/

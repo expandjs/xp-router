@@ -35,7 +35,7 @@ It can be used in conjunction with xp-pages.
 <link rel="import" href="../xp-selected-behavior/xp-selected-behavior.html">
 <link rel="import" href="xp-route.html">
 
-<script src="dist/xp-router.min.js"></script>
+<script src="dist/xp-router.js"></script>
 
 <dom-module id="xp-router">
 
@@ -109,23 +109,6 @@ It can be used in conjunction with xp-pages.
                 },
 
                 /**
-                 * If set to true, the router is initialized.
-                 *
-                 * @attribute initialized
-                 * @type boolean
-                 * @default false
-                 * @notifies
-                 * @readonly
-                 */
-                initialized: {
-                    notify: true,
-                    readOnly: true,
-                    reflectToAttribute: true,
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
                  * The selector used to recognize selectable items.
                  *
                  * @attribute item-selector
@@ -136,6 +119,23 @@ It can be used in conjunction with xp-pages.
                     reflectToAttribute: true,
                     type: String,
                     value: 'xp-route'
+                },
+
+                /**
+                 * If set to true, the router is running.
+                 *
+                 * @attribute running
+                 * @type boolean
+                 * @default false
+                 * @notifies
+                 * @readonly
+                 */
+                running: {
+                    notify: true,
+                    readOnly: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
                 },
 
                 /**
@@ -168,13 +168,13 @@ It can be used in conjunction with xp-pages.
                 var self = this;
 
                 // Checking
-                if (self.initialized || !self.items.length) { return; }
+                if (self.running || !self.items.length) { return; }
 
                 // Routing
                 self.items.forEach(function (route) { self.adaptee.on(route.path, self._handleRoute.bind(self, route)); });
 
-                // Initializing
-                self._setInitialized(self.adaptee.init());
+                // Running
+                self._setRunning(self.adaptee.run());
             },
 
             // HANDLER
