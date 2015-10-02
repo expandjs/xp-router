@@ -20,22 +20,19 @@ It can be used in conjunction with xp-pages.
 @homepage http://expandjs.com/elements/xp-router
 @repository https://github.com/ExpandJS/xp-router
 
-@behavior xp-adapter-behavior /bower_components/xp-adapter-behavior/xp-adapter-behavior.html
 @behavior xp-selected-behavior /bower_components/xp-selected-behavior/xp-selected-behavior.html
 
 @dependency polymer Polymer/polymer#^1.1.0
 @dependency expandjs ExpandJS/expandjs#0.9.10
-@dependency xp-adapter-behavior ExpandJS/xp-adapter-behavior#0.9.10
 @dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.10
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
-<link rel="import" href="../xp-adapter-behavior/xp-adapter-behavior.html">
 <link rel="import" href="../xp-selected-behavior/xp-selected-behavior.html">
 <link rel="import" href="xp-route.html">
 
-<script src="dist/xp-router.js"></script>
+<script src="dist/xp-router.min.js"></script>
 
 <dom-module id="xp-router">
 
@@ -59,7 +56,6 @@ It can be used in conjunction with xp-pages.
 
             // BEHAVIORS
             behaviors: [
-                Polymer.XPAdapterBehavior,
                 Polymer.XPSelectedBehavior
             ],
 
@@ -92,6 +88,21 @@ It can be used in conjunction with xp-pages.
 
             // PROPERTIES
             properties: {
+
+                /**
+                 * The adapted object.
+                 *
+                 * @attribute adaptee
+                 * @type Object
+                 * @notifies
+                 * @readonly
+                 */
+                adaptee: {
+                    notify: true,
+                    readOnly: true,
+                    type: Object,
+                    value: null
+                },
 
                 /**
                  * The active route's data.
@@ -156,7 +167,7 @@ It can be used in conjunction with xp-pages.
 
             // LISTENER
             ready: function () {
-                this._adapt(new XPRouter());
+                this._setAdaptee(new XPRouter());
             },
 
             /*********************************************************************/
