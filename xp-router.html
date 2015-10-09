@@ -185,7 +185,7 @@ It can be used in conjunction with xp-pages.
                 self.items.forEach(function (route) { self.adaptee.on(route.path, self._handleRoute.bind(self, route)); });
 
                 // Running
-                self._setRunning(self.adaptee.run());
+                XP.delay(function () { self._setRunning(self.adaptee.run()); });
             },
 
             // HANDLER
@@ -194,11 +194,11 @@ It can be used in conjunction with xp-pages.
                 // Vars
                 var self = this;
 
-                // Selecting
-                if (!route.redirect) { self.select(route, true); } else { XP.redirect(route.redirect, true); }
+                // Redirecting
+                if (route.redirect) { return XP.redirect(route.redirect, true); }
 
-                // Setting
-                if (!route.redirect) { self._setData(XP.assign(data, route.data)); }
+                // Selecting
+                XP.delay(function () { self._setData(XP.assign(data, route.data)); self.select(route, true); });
             }
         });
     </script>
