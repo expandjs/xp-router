@@ -108,7 +108,7 @@ module.exports = _dereq_('./lib');
             var self = this;
 
             // Initializing
-            if (!self.running && XP.isBrowser()) { self._adaptee.init(); }
+            if (!self.running && XP.isBrowser()) { self._adaptee.init('/'); }
 
             // Setting
             return self.running = true;
