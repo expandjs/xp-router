@@ -100,7 +100,7 @@ module.exports = _dereq_('./lib');
          * TODO DOC
          *
          * @method run
-         * @returns {boolean}
+         * @returns {Object}
          */
         run: function () {
 
@@ -108,10 +108,10 @@ module.exports = _dereq_('./lib');
             var self = this;
 
             // Initializing
-            if (!self.running && XP.isBrowser()) { self._adaptee.init('/'); }
+            if (!self.running && XP.isBrowser()) { XP.delay(function () { self._adaptee.init('/'); }); }
 
             // Setting
-            return self.running = true;
+            return self;
         },
 
         /*********************************************************************/

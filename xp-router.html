@@ -23,8 +23,8 @@ It can be used in conjunction with xp-pages.
 @behavior xp-selected-behavior /bower_components/xp-selected-behavior/xp-selected-behavior.html
 
 @dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.10
-@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.10
+@dependency expandjs ExpandJS/expandjs#0.9.11
+@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.11
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -61,30 +61,10 @@ It can be used in conjunction with xp-pages.
 
             /*********************************************************************/
 
-            /**
-             * Updates the view's data.
-             *
-             * @method _update
-             * @returns {Element}
-             * @private
-             */
-            _update: function () {
-                var self = this;
-                if (self.view) { self.view.data = self.data; }
-                return self;
-            },
-
-            /*********************************************************************/
-
             // LISTENERS
             listeners: {
                 'items-changed': '_handleItems'
             },
-
-            // OBSERVERS
-            observers: [
-                '_update(data.*, view)'
-            ],
 
             // PROPERTIES
             properties: {
@@ -114,9 +94,10 @@ It can be used in conjunction with xp-pages.
                  */
                 data: {
                     notify: true,
+                    observer: '_handleView',
                     readOnly: true,
                     type: Object,
-                    value: function () { return {}; }
+                    value: null
                 },
 
                 /**
@@ -158,6 +139,7 @@ It can be used in conjunction with xp-pages.
                  */
                 view: {
                     notify: true,
+                    observer: '_handleView',
                     type: Object,
                     value: null
                 }
@@ -185,7 +167,7 @@ It can be used in conjunction with xp-pages.
                 self.items.forEach(function (route) { self.adaptee.on(route.path, self._handleRoute.bind(self, route)); });
 
                 // Running
-                XP.delay(function () { self._setRunning(self.adaptee.run()); });
+                self._setRunning(!!self.adaptee.run());
             },
 
             // HANDLER
@@ -199,6 +181,16 @@ It can be used in conjunction with xp-pages.
 
                 // Selecting
                 XP.delay(function () { self._setData(XP.assign(data, route.data)); self.select(route, true); });
+            },
+
+            // HANDLER
+            _handleView: function () {
+
+                // Vars
+                var self = this;
+
+                // Setting
+                if (self.view) { self.view.data = self.data; }
             }
         });
     </script>
