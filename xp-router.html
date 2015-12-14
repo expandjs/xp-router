@@ -7,36 +7,37 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-This element is used to perform client side routing.
+A custom element used to perform client side routing.
 
-It must be used in conjunction with xp-route.
-
-It can be used in conjunction with xp-pages.
+It must be used in conjunction with
+[xp-route](http://expandjs.com/elements/xp-route).
 
 @element xp-router
 @description A custom element used to perform client side routing
-@keywords web app, html5, expandjs, web-components
+@keywords expandjs, web app, custom elements, web-components
 @group navigation
+@hot
+
 @homepage http://expandjs.com/elements/xp-router
 @repository https://github.com/ExpandJS/xp-router
 
-@behavior xp-selected-behavior /bower_components/xp-selected-behavior/xp-selected-behavior.html
+@behavior xp-selector-behavior /bower_components/xp-selector/xp-selector-behavior.html
 
-@dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.11
-@dependency xp-selected-behavior ExpandJS/xp-selected-behavior#0.9.11
+@dependency polymer Polymer/polymer#^1.2.0
+@dependency expandjs ExpandJS/expandjs#0.10.0
+@dependency xp-selector ExpandJS/xp-selector#0.10.0
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
-<link rel="import" href="../xp-selected-behavior/xp-selected-behavior.html">
+<link rel="import" href="../xp-selector/xp-selector-behavior.html">
 <link rel="import" href="xp-route.html">
 
 <script src="dist/xp-router.min.js"></script>
 
 <dom-module id="xp-router">
 
-    <template>
+    <template strip-whitespace>
 
         <style>
             :host {
@@ -44,7 +45,7 @@ It can be used in conjunction with xp-pages.
             }
         </style>
 
-        <content id="content"></content>
+        <content></content>
 
     </template>
 
@@ -56,33 +57,18 @@ It can be used in conjunction with xp-pages.
 
             // BEHAVIORS
             behaviors: [
-                Polymer.XPSelectedBehavior
+                Polymer.XPSelectorBehavior
             ],
 
             /*********************************************************************/
 
-            // LISTENERS
-            listeners: {
-                'items-changed': '_handleItems'
-            },
+            // OBSERVERS
+            observers: [
+                '_viewChanged(data, view)'
+            ],
 
             // PROPERTIES
             properties: {
-
-                /**
-                 * The adapted object.
-                 *
-                 * @attribute adaptee
-                 * @type Object
-                 * @notifies
-                 * @readonly
-                 */
-                adaptee: {
-                    notify: true,
-                    readOnly: true,
-                    type: Object,
-                    value: null
-                },
 
                 /**
                  * The active route's data.
@@ -94,23 +80,34 @@ It can be used in conjunction with xp-pages.
                  */
                 data: {
                     notify: true,
-                    observer: '_handleView',
                     readOnly: true,
-                    type: Object,
-                    value: null
+                    type: Object
                 },
 
                 /**
-                 * The selector used to recognize selectable items.
+                 * The selector used to recognize items.
                  *
                  * @attribute item-selector
                  * @type string
-                 * @default "xp-route"
+                 * @default ".route"
                  */
                 itemSelector: {
                     reflectToAttribute: true,
                     type: String,
-                    value: 'xp-route'
+                    value: '.route'
+                },
+
+                /**
+                 * The router instance.
+                 *
+                 * @attribute router
+                 * @type Object
+                 * @notifies
+                 * @readonly
+                 */
+                router: {
+                    notify: true,
+                    readOnly: true
                 },
 
                 /**
@@ -138,37 +135,55 @@ It can be used in conjunction with xp-pages.
                  * @notifies
                  */
                 view: {
-                    notify: true,
-                    observer: '_handleView',
-                    type: Object,
-                    value: null
+                    notify: true
                 }
             },
 
             /*********************************************************************/
 
-            // LISTENER
-            ready: function () {
-                this._setAdaptee(new XPRouter());
-            },
-
-            /*********************************************************************/
-
-            // HANDLER
-            _handleItems: function () {
+            // OBSERVER
+            _itemsObserver: function () {
 
                 // Vars
                 var self = this;
 
+                // Super
+                Polymer.XPSelectorBehaviorImp._itemsObserver.apply(self, arguments);
+
                 // Checking
-                if (self.running || !self.items.length) { return; }
+                if (self.running || !self.items || !self.items.length) { return; }
 
                 // Routing
-                self.items.forEach(function (route) { self.adaptee.on(route.path, self._handleRoute.bind(self, route)); });
+                self.async(function () { self.items.forEach(function (route) { self.router.on(route.path, self._handleRoute.bind(self, route)); }); });
 
                 // Running
-                self._setRunning(!!self.adaptee.run());
+                self._setRunning(!!self.router.run());
             },
+
+            // OBSERVER
+            _viewChanged: function () {
+
+                // Setting
+                if (this.view) { this.view.data = this.data; }
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            created: function () {
+
+                // Classifying
+                this.classList.add('router');
+            },
+
+            // LISTENER
+            ready: function () {
+
+                // Setting
+                this._setRouter(new XPRouter());
+            },
+
+            /*********************************************************************/
 
             // HANDLER
             _handleRoute: function (route, data) {
@@ -179,18 +194,11 @@ It can be used in conjunction with xp-pages.
                 // Redirecting
                 if (route.redirect) { return XP.redirect(route.redirect, true); }
 
-                // Selecting
-                XP.delay(function () { self._setData(XP.assign(data, route.data)); self.select(route, true); });
-            },
-
-            // HANDLER
-            _handleView: function () {
-
-                // Vars
-                var self = this;
-
                 // Setting
-                if (self.view) { self.view.data = self.data; }
+                XP.delay(self._setData.bind(self, XP.assign(data, route.data)));
+
+                // Selecting
+                XP.delay(self.select.bind(self, route, true));
             }
         });
     </script>

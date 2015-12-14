@@ -2,7 +2,7 @@
   "name": "xp-router",
   "license": "BSD-3-Clause",
   "description": "This class is used to do client/server side routing.",
-  "version": "0.9.11",
+  "version": "0.10.0",
   "homepage": "https://github.com/ExpandJS/xp-router",
   "author": "ExpandJS <dev@expandjs.com> (http://expandjs.com)",
   "contributors": [
@@ -15,8 +15,9 @@
     "url": "https://github.com/ExpandJS/xp-router.git"
   },
   "dependencies": {
-    "director": "^1.0.0",
-    "path-to-regexp": "^1.0.0"
+    "director": "^1.2.0",
+    "expandjs": "0.10.0",
+    "path-to-regexp": "^1.2.0"
   },
   "devDependencies": {
     "browserify": "*",

@@ -7,19 +7,22 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-This element is used to declare a client route.
+A custom element used to declare a client side route.
 
-It must be used in conjunction with xp-router.
+It must be used in conjunction with
+[xp-router](http://expandjs.com/elements/xp-router).
 
 @element xp-route
 @description A custom element used to declare a client side route
-@keywords web app, html5, expandjs, web-components
+@keywords expandjs, web app, custom elements, web-components
 @group navigation
+@hot
+
 @homepage http://expandjs.com/elements/xp-route
 @repository https://github.com/ExpandJS/xp-route
 
-@dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.11
+@dependency polymer Polymer/polymer#^1.2.0
+@dependency expandjs ExpandJS/expandjs#0.10.0
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -59,8 +62,7 @@ It must be used in conjunction with xp-router.
              * @notifies
              */
             data: {
-                notify: true,
-                value: null
+                notify: true
             },
 
             /**
@@ -68,11 +70,12 @@ It must be used in conjunction with xp-router.
              *
              * @attribute name
              * @type string
+             * @default ""
              */
             name: {
                 reflectToAttribute: true,
                 type: String,
-                value: null
+                value: ''
             },
 
             /**
@@ -83,8 +86,7 @@ It must be used in conjunction with xp-router.
              */
             path: {
                 reflectToAttribute: true,
-                type: String,
-                value: null
+                type: String
             },
 
             /**
@@ -94,10 +96,17 @@ It must be used in conjunction with xp-router.
              * @type string
              */
             redirect: {
-                reflectToAttribute: true,
-                type: String,
-                value: null
+                type: String
             }
+        },
+
+        /*********************************************************************/
+
+        // LISTENER
+        created: function () {
+
+            // Classifying
+            this.classList.add('route');
         }
     });
 </script>
