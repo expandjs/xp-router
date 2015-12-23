@@ -62,23 +62,18 @@ It must be used in conjunction with
 
             /*********************************************************************/
 
-            // OBSERVERS
-            observers: [
-                '_viewChanged(data, view)'
-            ],
-
             // PROPERTIES
             properties: {
 
                 /**
-                 * The selected route's data.
+                 * The selected route's params.
                  *
-                 * @attribute data
+                 * @attribute params
                  * @type Object
                  * @notifies
                  * @readonly
                  */
-                data: {
+                params: {
                     notify: true,
                     readOnly: true,
                     type: Object
@@ -122,20 +117,8 @@ It must be used in conjunction with
                 running: {
                     notify: true,
                     readOnly: true,
-                    reflectToAttribute: true,
                     type: Boolean,
                     value: false
-                },
-
-                /**
-                 * The selected view.
-                 *
-                 * @attribute view
-                 * @type Element
-                 * @notifies
-                 */
-                view: {
-                    notify: true
                 }
             },
 
@@ -160,13 +143,6 @@ It must be used in conjunction with
                 self._setRunning(!!self.router.run());
             },
 
-            // OBSERVER
-            _viewChanged: function () {
-
-                // Setting
-                if (this.view) { this.view.data = this.data; }
-            },
-
             /*********************************************************************/
 
             // LISTENER
@@ -186,7 +162,7 @@ It must be used in conjunction with
             /*********************************************************************/
 
             // HANDLER
-            _handleRoute: function (route, data) {
+            _handleRoute: function (route, params) {
 
                 // Vars
                 var self = this;
@@ -195,7 +171,7 @@ It must be used in conjunction with
                 if (route.redirect) { return XP.redirect(route.redirect, true); }
 
                 // Setting
-                XP.delay(self._setData.bind(self, XP.assign(data, route.data)));
+                XP.delay(self._setParams.bind(self, params));
 
                 // Selecting
                 XP.delay(self.select.bind(self, route, true));
